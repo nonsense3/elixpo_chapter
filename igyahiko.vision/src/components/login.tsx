@@ -1,139 +1,235 @@
-"use client"
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import Image from 'next/image'
-import Link from 'next/link'
-import { LOGO } from '../../public/images/images'
-import { UseAuth } from '@/hooks/use-auth'
-import { Loader2 } from 'lucide-react'
-import GoogleProvider from './button/oAuth/google'
+"use client";
 
-export default function LoginPage() {
-    const {handleSignIn,signInForm,isLoading} = UseAuth();
-    const {register,handleSubmit,formState: {errors}} = signInForm
-    return (
-         <form
-                onSubmit={handleSubmit(handleSignIn)}
-                action=""
-                className="bg-card m-auto h-fit w-full max-w-sm rounded-[calc(var(--radius)+.125rem)] border p-0.5 shadow-md dark:[--color-muted:var(--color-zinc-900)]">
-                <div className="p-8 pb-6">
-                    <div>
-                        <Link
-                            href="/"
-                            aria-label="go home">
-                             <Image
-                                alt=''
-                                src={LOGO.logo}
-                                className='w-12 h-12 object-contain'
-                            
-                                                        />
-                        </Link>
-                        <h1 className="mb-1 mt-4 text-xl font-[poppins] font-black ">Sign In to Vision</h1>
-                        <p className="text-sm font-mono">Welcome back! Sign in to continue</p>
-                    </div>
+// We'll use Zod for schema validation, which is standard with shadcn/ui forms
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-                    <div className="mt-6 grid grid-cols-2 gap-3">
-                        <GoogleProvider/>
-                        <Button
-                            type="button"
-                            variant="outline">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-github" viewBox="0 0 16 16">
-  <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
-</svg> 
-                        <span className="font-mono">Github</span>
-                        </Button>
-                    </div>
+import { useState } from "react";
+// Using lucide-react for icons, which is the default for shadcn/ui
+import { Loader2, Github, Users } from "lucide-react";
 
-                    <hr className="my-4 border-dashed" />
+// Import the idiomatic shadcn/ui components
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage, // This is key for showing errors
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <Label
-                                htmlFor="email"
-                                className="block text-sm font-mono">
-                                Email
-                            </Label>
-                            <Input
-                        
-                                type="email"
-                                required
-                                {...register('email')}
-                                className={errors.email ? 'border-destructive':''}
-                                name="email"
-                                id="email"
-                            />
+// --- Mocks for your custom code ---
+// In a real app, you would import these.
+// This is just to make the example complete.
 
-                            {
-                                errors.email && (
-                                    <span className='text-xs font-mono text-destructive'>{errors.email.message}</span>
-                                )
-                            }
-                        </div>
+// 1. Mock UseAuth hook
+// This simulates the hook you provided.
+const useAuth = () => {
+  const [isLoading, setIsLoading] = useState(false);
 
-                        <div className="space-y-0.5">
-                            <div className="flex items-center justify-between">
-                                <Label
-                                    htmlFor="pwd"
-                                    className="text-sm font-mono">
-                                    Password
-                                </Label>
-                                <Button
-                                    asChild
-                                    variant="link"
-                                    size="sm">
-                                    <Link
-                                        href="#"
-                                        className="link intent-info variant-ghost font-mono text-xs">
-                                        Forgot your Password ?
-                                    </Link>
-                                </Button>
-                            </div>
-                            <Input
-                                type="password"
-                                required
-                                {...register("password")}
-                                name="password"
-                                id="password"
-                                className={errors.password ? "text-destructive": ''}
-                            />
+  // This function now receives the validated data from the form
+  const handleSignUp = async (data) => {
+    setIsLoading(true);
+    console.log("Signing up with:", data);
+    // Simulate an API call
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("Sign up successful!");
+    setIsLoading(false);
+  };
 
-                            {
-                                errors.password && (
-                                     <span className='font-mono text-destructive text-xs'>{errors.password.message}</span>
-                                )
-                            }
-                        </div>
-                        {
-                            errors.root && (
-                                <span className='text-destructive text-xs font-mono text-center'>{errors.root.message}</span>
-                            )
-                        }
-                        <Button 
-                        disabled={isLoading}
-                        type='submit'
-                        className="w-full font-mono">
-                           {
-                            isLoading ? (<>
-                            <Loader2 className='animate-spin size-4' />
-                            Signing In...
-                            </>) : (<>Sign In</>)
-                           }
-                        </Button>
-                    </div>
-                </div>
+  return { handleSignUp, isLoading };
+};
 
-                <div className="bg-muted rounded-(--radius) border p-3">
-                    <p className="text-accent-foreground font-mono text-center text-xs">
-                        Don't have an account ?
-                        <Button
-                            asChild
-                            variant="link"
-                            className="px-2 text-xs">
-                            <Link href="sign-up" >Create account</Link>
-                        </Button>
-                    </p>
-                </div>
+// 2. Mock GoogleProvider component
+// This simulates the button component you provided.
+const GoogleProvider = () => (
+  <Button variant="outline" type="button" className="w-full">
+    {/* Simple SVG for Google Icon */}
+    <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+      <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 21.2 172.9 60.3l-66.8 65.1c-21.6-20.5-50.4-32.5-86.1-32.5-69.5 0-126.5 57.2-126.5 127.3s57 127.3 126.5 127.3c76.3 0 110.2-50.8 114.9-77.7H248v-97.1h236.1c2.3 12.7 3.9 25.9 3.9 40.8z"></path>
+    </svg>
+    Google
+  </Button>
+);
+// --- End of Mocks ---
+
+// 1. Define the Zod schema for validation
+const formSchema = z.object({
+  firstname: z.string().min(2, { message: "First name is too short." }),
+  lastname: z.string().min(2, { message: "Last name is too short." }),
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+});
+
+// 2. Renamed component to SignUpPage (more accurate than LoginPage)
+export default function SignUpPage() {
+  // 3. Get auth methods from your hook
+  const { handleSignUp, isLoading } = useAuth();
+
+  // 4. Set up react-hook-form with the Zod resolver
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstname: "",
+      lastname: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  // 5. This function is passed to the form's onSubmit
+  const onSubmit = (data) => {
+    // handleSignUp is already designed to take the form data
+    handleSignUp(data);
+  };
+
+  return (
+    // This div centers the component on the page
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 font-sans">
+
+      {/* 6. Use the Card component for a cleaner layout */}
+      <Card className="w-full max-w-md">
+
+        <CardHeader className="text-center">
+          <a href="/" aria-label="go home" className="inline-block">
+            {/* Using a Lucide icon as a placeholder for your logo */}
+            <Users className="mx-auto h-12 w-12 text-primary" />
+          </a>
+          <CardTitle className="mt-4 text-2xl font-bold font-[poppins]">Create an Account</CardTitle>
+          <CardDescription className="font-mono text-sm">
+            Welcome! Enter your details to get started.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          {/* OAuth Buttons */}
+          <div className="grid grid-cols-2 gap-4">
+            <GoogleProvider />
+            <Button variant="outline" type="button" className="w-full">
+              <Github className="mr-2 h-4 w-4" />
+              Github
+            </Button>
+          </div>
+
+          {/* A cleaner "OR" separator */}
+          <div className="my-6 flex items-center gap-4">
+            <div className="h-px flex-1 bg-muted"></div>
+            <span className="text-xs text-muted-foreground font-mono">
+              OR CONTINUE WITH
+            </span>
+            <div className="h-px flex-1 bg-muted"></div>
+          </div>
+
+          {/* 7. Use the shadcn/ui Form component */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+
+              {/* First/Last Name in a grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-mono">First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-mono">Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Email Field */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-mono">Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="john.doe@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password Field */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-mono">Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Submit Button with loading state */}
+              <Button type="submit" className="w-full font-mono font-bold" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registering...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
+              </Button>
+
             </form>
+
     )
+          </Form>
+        </CardContent>
+
+        {/* 8. Use CardFooter for the sign-in link */}
+        <CardFooter className="justify-center">
+          <p className="text-center font-mono text-sm text-muted-foreground">
+            Have an account?
+            <Button asChild variant="link" className="px-2 font-mono text-sm">
+              <a href="sign-in">Sign In</a>
+            </Button>
+          </p>
+        </CardFooter>
+
+      </Card>
+    </div>
+  );
 }
+
+Footer
+© 2025 GitHub, Inc.
+Footer navigation
+Terms
+P
